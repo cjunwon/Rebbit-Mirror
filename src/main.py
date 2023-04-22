@@ -1,6 +1,6 @@
 import reddit_data
+import generate_image
 import generate_prompt
-import image_generation
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     print("query cohere")
     image_gen_prompt = generate_prompt.generate_prompt(prompt)
     print(image_gen_prompt)
-    url = image_generation.generate_image(image_gen_prompt)
+    url = generate_image.generate_image(image_gen_prompt)
     print(url)
 
 
