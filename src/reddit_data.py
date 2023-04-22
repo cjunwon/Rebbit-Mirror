@@ -66,13 +66,18 @@ def getAllUserComments(username, count=20):
     comments = []
     for comment in reddit.redditor(username).comments.new(limit=count):
         submission_id = comment.link_id[3:]
-        parent_id = comment.parent_id[3:]
+        parent_id = comment.parent_id
 
         try:
+            parent_id = comment.parent_id[3:]
+        except:
+            pass
+
+        if parent_id is None:
             post = reddit.submission(submission_id)
             submission_title = post.title
             submission_body = post.selftext
-        except prawcore.exceptions.NotFound:
+        else:
             parent = reddit.comment(parent_id)
             submission_title = None
             submission_body = parent.body
