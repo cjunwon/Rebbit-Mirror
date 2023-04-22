@@ -9,11 +9,11 @@ def generate_image(prompt):
     try:
         response = openai.Image.create(
             prompt=prompt,
-            size='1024x1024',
+            size='512x512',
             response_format='url'
         )
 
-        print(response['data'][0]['url'])
+        return response['data'][0]['url']
     except openai.OpenAIError as e:
         print(e.http_status)
         print(e.error)
