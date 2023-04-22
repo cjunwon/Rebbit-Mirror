@@ -68,11 +68,12 @@ def getAllUserComments(username, count=20):
 
         try:
             post = reddit.submission(submission_id)
-            submission_title = post.title
+            post_title = post.title
             submission_body = post.selftext
         except prawcore.exceptions.NotFound:
+            post = reddit.submission(submission_id)
             parent = reddit.comment(parent_id)
-            submission_title = None
+            post_title = post.title
             submission_body = parent.body
 
         comments.append({
@@ -83,7 +84,7 @@ def getAllUserComments(username, count=20):
             'comment_content': comment.body,
             'comment_score': round(comment.score),
             'comment_awards': round(comment.total_awards_received),
-            'submission_title': submission_title,
+            'post_title': post_title,
             'submission_or_parent_content': submission_body
         })
 
