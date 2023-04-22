@@ -16,14 +16,13 @@ reddit = praw.Reddit(client_id=reddit_client_id,
 
 # function to get all posts from a user
 
-def getAllUserPosts(r, username, count=20):
+def getAllUserPosts(username, count=20):
 
     """
     Function to get all posts from a user
 
     Params:
     --------
-    r: Reddit instance
     username: Reddit username
 
     Return:
@@ -32,7 +31,7 @@ def getAllUserPosts(r, username, count=20):
     """
 
     posts = []
-    for submission in r.redditor(username).submissions.new(limit=count):
+    for submission in reddit.redditor(username).submissions.new(limit=count):
         post = {
             'subreddit_name': submission.subreddit.display_name,
             'submission_id': submission.id,
@@ -45,14 +44,13 @@ def getAllUserPosts(r, username, count=20):
     return posts
 
 # function to get all comments from a user and parent post/coment
-def getAllUserComments(r, username, count=20):
+def getAllUserComments(username, count=20):
 
     """
     Function to get all comments from a user and parent post/coment
 
     Params:
     --------
-    r: Reddit instance
     username: Reddit username
 
     Return:
@@ -61,16 +59,16 @@ def getAllUserComments(r, username, count=20):
     """
 
     comments = []
-    for comment in r.redditor(username).comments.new(limit=count):
+    for comment in reddit.redditor(username).comments.new(limit=count):
         submission_id = comment.link_id[3:]
         parent_id = comment.parent_id[3:]
 
         try:
-            post = r.submission(submission_id)
+            post = reddit.submission(submission_id)
             submission_title = post.title
             submission_body = post.selftext
         except prawcore.exceptions.NotFound:
-            parent = r.comment(parent_id)
+            parent = reddit.comment(parent_id)
             submission_title = None
             submission_body = parent.body
 
