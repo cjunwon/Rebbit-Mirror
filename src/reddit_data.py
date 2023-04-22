@@ -16,8 +16,8 @@ reddit = praw.Reddit(client_id=reddit_client_id,
 
 # function to get all posts from a user
 
-def getAllUserPosts(username, count=20):
 
+def getAllUserPosts(username, count=20):
     """
     Function to get all posts from a user
 
@@ -32,20 +32,25 @@ def getAllUserPosts(username, count=20):
 
     posts = []
     for submission in reddit.redditor(username).submissions.new(limit=count):
-        post = {
-            'subreddit_name': submission.subreddit.display_name,
-            'submission_id': submission.id,
-            'submission_title': submission.title,
-            'submission_content': submission.selftext,
-            'submission_score': round(submission.score),
-            'submission_awards': round(submission.total_awards_received),
-        }
-        posts.append(post)
+        if submission.selftext == '':
+            continue
+        else:
+            post = {
+                'subreddit_name': submission.subreddit.display_name,
+                'submission_id': submission.id,
+                'submission_title': submission.title,
+                'submission_content': submission.selftext,
+                'submission_score': round(submission.score),
+                'submission_awards': round(submission.total_awards_received),
+            }
+            posts.append(post)
+
     return posts
 
 # function to get all comments from a user and parent post/coment
-def getAllUserComments(username, count=20):
 
+
+def getAllUserComments(username, count=20):
     """
     Function to get all comments from a user and parent post/coment
 
