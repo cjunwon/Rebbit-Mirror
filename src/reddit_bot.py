@@ -2,8 +2,8 @@ import os
 import praw
 
 import reddit_data
+import generate_image
 import generate_prompt
-import image_generation
 
 reddit_client_id = os.getenv('reddit_bot_client_id')
 reddit_client_secret = os.getenv('reddit_bot_client_secret')
@@ -62,8 +62,8 @@ class RebbitBot:
         print(prompt)
         print("query cohere")
         image_gen_prompt = generate_prompt.generate_prompt(prompt)
+        url = generate_image.generate_image(image_gen_prompt)
         print(image_gen_prompt)
-        url = image_generation.generate_image(image_gen_prompt)
         return url
 
 
