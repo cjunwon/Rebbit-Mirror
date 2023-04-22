@@ -5,14 +5,17 @@ import image_generation
 
 def main():
     print("cock n balls")
-    username = "brokenjago"
+    # username = "brokenjago"
+    username = "ladatajunkie"
     print("query reddit")
     comments = reddit_data.getAllUserComments(username=username, count=5)
     posts = reddit_data.getAllUserPosts(username=username, count=5)
     print(comments)
     print(username)
-    cleaned_comments = [(comment["submission_or_parent_content"],
-                         comment["comment_content"]) for comment in comments]
+    cleaned_comments = [(comment['post_title'], comment['comment_content'])
+                             if comment['submission_or_parent_content'] == '' 
+                             else (comment['submission_or_parent_content'], comment['comment_content'])
+                             for comment in comments]
     cleaned_posts = [
         (post["submission_title"], post["submission_content"]) for post in posts]
     response_beginning = "This person is"
