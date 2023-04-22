@@ -70,13 +70,19 @@ def getAllUserComments(username, count=20):
             post = reddit.submission(submission_id)
             post_title = post.title
             submission_body = post.selftext
+            
+            if len(submission_body) > 1000:
+                submission_body = submission_body[:1000]
+            else:
+                submission_body = submission_body
+
         except prawcore.exceptions.NotFound:
             post = reddit.submission(submission_id)
             parent = reddit.comment(parent_id)
             post_title = post.title
             submission_body = parent.body
 
-        comments.append({
+        comment = {
             'subreddit_name': comment.subreddit.display_name,
             'submission_id': submission_id,
             'parent_id': parent_id,
@@ -85,7 +91,8 @@ def getAllUserComments(username, count=20):
             'comment_score': round(comment.score),
             'comment_awards': round(comment.total_awards_received),
             'post_title': post_title,
-            'submission_or_parent_content': submission_body
-        })
+            'submission_or_parent_content': submission_body,
+        }
+        comments.append(comment)
 
     return comments
