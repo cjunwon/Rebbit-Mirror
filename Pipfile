@@ -10,6 +10,8 @@ ipykernel = "*"
 openai = "*"
 
 [dev-packages]
+pandas = "*"
+pyarrow = "*"
 
 [requires]
 python_version = "3.9"
