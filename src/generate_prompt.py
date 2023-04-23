@@ -22,7 +22,7 @@ def format_post(title: str, post: str) -> str:
     return f"Post title: {title}\nPost content: {post}"
 
 
-def format_prompt(comments, posts, response_beginning):
+def format_prompt(comments, posts):
     prompt = "I will provide posts and comments made by one specific user on Reddit. You will create an image of the user based on their posts.\n\n"
 
     for previous, reply in comments:
@@ -43,7 +43,7 @@ def format_prompt(comments, posts, response_beginning):
 
 def generate_prompt(prompt, temp=1.5):
     response = co.generate(
-        model='7d1e351d-e5cb-4680-9d99-620cacfe0480-ft',
+        model='command-xlarge-nightly',
         prompt=prompt,
         max_tokens=270,
         temperature=temp,
