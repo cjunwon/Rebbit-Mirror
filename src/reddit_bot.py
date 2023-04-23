@@ -32,6 +32,7 @@ class RebbitBot:
                     if self.check_rate(message.author.name):
                         pic_url = self.generate_image(message.author.name)
                         message.reply(f'If your words were a picture, [this is what you\'d look like]({pic_url}).')
+                        print("Just replied to: " + message.author.name)
                     message.mark_read()
             except exceptions.APIException:
                 print('whoopsies')
@@ -59,12 +60,11 @@ class RebbitBot:
                             comment['comment_content']) for comment in comments]
         cleaned_posts = [(post['submission_title'], post['submission_content']) for post in posts]
 
-        response_beginning = 'This person is'
         print('create cohere prompt')
-        prompt = generate_prompt.format_prompt(cleaned_comments, cleaned_posts, response_beginning)
+        prompt = generate_prompt.format_prompt(cleaned_comments, cleaned_posts)
         print(prompt)
         print('query cohere')
-        image_gen_prompt = generate_prompt.generate_prompt(prompt)
+        image_gen_prompt = generate_prompt.generate_prompt(prompt, temp=1) + " portrait, photo realistic, high detail"
         print(image_gen_prompt)
 
         url = generate_image.generate_image(image_gen_prompt)
