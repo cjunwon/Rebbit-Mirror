@@ -4,7 +4,7 @@ import cohere
 from os import environ
 
 # set the trial key
-trial_key = environ['COHERE_TRIAL_KEY']
+trial_key = environ['COHERE_PROD_KEY']
 co = cohere.Client(trial_key)  # This is your trial API key
 
 
@@ -23,6 +23,8 @@ def format_post(title: str, post: str) -> str:
 def format_prompt(comments, posts, response_beginning):
     prompt = "I will provide posts and comments made by one specific user on a social media platform. You will determine characteristics about the user based on their posts.\n\n"
 
+    # negative = "'s positive and negative characteristics"
+
     for previous, reply in comments:
         prompt += format_comment(previous, reply)
         prompt += "\n\n"
@@ -34,23 +36,29 @@ def format_prompt(comments, posts, response_beginning):
         prompt += format_post(title, content)
         prompt += "\n\n"
 
-    prompt += f"Using the comments and posts (content and style) made by this specific user, analyze their characteristics and personality to write me a prompt to generate an image of the person. The prompt should describe the user's face, body, emotions, what they are doing, and their surroundings.\n\nThe prompt: {response_beginning}"
+    prompt += f"Using the comments and posts (content and style) made by this specific user, analyze their characteristics and personality to describe the person. Describe the user's face, facial hair, body, emotions, and their surroundings.\n\nThe description of this person: {response_beginning}"
 
     return prompt
 
 
-def generate_prompt(prompt):
+def generate_prompt(prompt, temp = 1.5):
     response = co.generate(
-        model='command-xlarge-nightly',
+        model='7d1e351d-e5cb-4680-9d99-620cacfe0480-ft',
         prompt=prompt,
         max_tokens=100,
-        temperature=1.5,
+        temperature=temp,
         # num_generations=5,
         k=0,
-        stop_sequences=[],
+        stop_sequences=["\n"],
         return_likelihoods='NONE')
 
+    # print(response.generations[0])
+
     return response.generations[0].text
+
+def remove_stop_words(string: str):
+    """Remove stop words from a string."""
+    pass
 
 
 if __name__ == "__main__":
@@ -66,5 +74,6 @@ if __name__ == "__main__":
          "It will be upheld by the Trump Supreme Court.")
     ]
     prompt = format_prompt(comments, posts, response_beginning)
-    output = generate_prompt(prompt)
-    print(output)
+    print(prompt)
+    output = generate_prompt(prompt, temp=1)
+    print(response_beginning + output)
