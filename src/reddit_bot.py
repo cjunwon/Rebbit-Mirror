@@ -120,7 +120,7 @@ class RebbitBot:
                     'subreddit_name': submission.subreddit.display_name,
                     'submission_id': submission.id,
                     'submission_title': submission.title,
-                    'submission_content': submission.selftext,
+                    'submission_content': submission.selftext[:800],
                     'submission_score': round(submission.score),
                     'submission_awards': round(submission.total_awards_received),
                 }
