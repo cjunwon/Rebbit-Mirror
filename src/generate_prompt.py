@@ -1,7 +1,11 @@
+from os import environ
 import cohere
 
+import nltk
+from nltk.corpus import stopwords
+# nltk.download('stopwords')
+
 # import the environment variable COHERE_TRIAL_KEY
-from os import environ
 
 # set the trial key
 trial_key = environ['COHERE_PROD_KEY']
@@ -10,9 +14,7 @@ co = cohere.Client(trial_key)  # This is your trial API key
 
 def format_comment(previous: str, reply: str) -> str:
     """Format a comment from Reddit for Cohere prompting."""
-    return f"Another user said: {previous}\nAnd this user replied: {reply}"
-
-
+    return f"Someone else said: {previous}\nAnd this user replied: {reply}"
 
 
 def format_post(title: str, post: str) -> str:
@@ -21,44 +23,59 @@ def format_post(title: str, post: str) -> str:
 
 
 def format_prompt(comments, posts, response_beginning):
-    prompt = "I will provide posts and comments made by one specific user on a social media platform. You will determine characteristics about the user based on their posts.\n\n"
-
-    # negative = "'s positive and negative characteristics"
+    prompt = "I will provide posts and comments made by one specific user on Reddit. You will create an image of the user based on their posts.\n\n"
 
     for previous, reply in comments:
         prompt += format_comment(previous, reply)
         prompt += "\n\n"
 
-    prompt += "Now I will provide original posts from this one specific user.\n\n"
+    prompt += "Now I will provide posts from this one specific user.\n\n"
 
     for title, content in posts:
         # prompt += "POST\n"
         prompt += format_post(title, content)
         prompt += "\n\n"
 
-    prompt += f"Using the comments and posts (content and style) made by this specific user, analyze their characteristics and personality to describe the person. Describe the user's face, facial hair, body, emotions, and their surroundings.\n\nThe description of this person: {response_beginning}"
+    prompt += "Using the comments and posts made by this specific user, analyze their characteristics, personality, and word use to write me a prompt to generate one image of the person. The prompt should describe the user's face, facial hair, body, emotions, what they are doing, and their surroundings.\n\nThe prompt:"
 
     return prompt
 
 
-def generate_prompt(prompt, temp = 1.5):
+def generate_prompt(prompt, temp=1.5):
     response = co.generate(
         model='7d1e351d-e5cb-4680-9d99-620cacfe0480-ft',
         prompt=prompt,
-        max_tokens=100,
+        max_tokens=270,
         temperature=temp,
         # num_generations=5,
         k=0,
-        stop_sequences=["\n"],
+        # stop_sequences=["\n"],
         return_likelihoods='NONE')
-
-    # print(response.generations[0])
 
     return response.generations[0].text
 
-def remove_stop_words(string: str):
-    """Remove stop words from a string."""
-    pass
+
+def remove_stopwords(text: str):
+    # Lowercase the input text
+    text = text.lower()
+
+    # Use a set for faster lookups
+    stop_words = set(stopwords.words('english'))
+    stop_words.add("digital")
+    stop_words.add("illustration")
+
+    # Filter out any stopwords
+    words = filter(lambda word: word not in stop_words, text.split(sep=' '))
+
+    unique_words = []
+    for word in words:
+        if word not in unique_words:
+            unique_words.append(word)
+
+    # Join the remaining words back into a string
+    cleaned_text = ' '.join(unique_words)
+
+    return cleaned_text
 
 
 if __name__ == "__main__":
@@ -75,5 +92,7 @@ if __name__ == "__main__":
     ]
     prompt = format_prompt(comments, posts, response_beginning)
     print(prompt)
-    output = generate_prompt(prompt, temp=1)
-    print(response_beginning + output)
+    output = generate_prompt(prompt, temp=1) + " portrait, photo realistic, high detail"
+    print(output)
+    cleaned_output = remove_stopwords(output)
+    print(cleaned_output)
