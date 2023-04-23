@@ -30,9 +30,14 @@ class RebbitBot:
             try:
                 if message in self.reddit.inbox.mentions() and message in self.reddit.inbox.unread():
                     if self.check_rate(message.author.name):
-                        pic_url = self.generate_image(message.author.name)
-                        message.reply(f'If your words were a picture, [this is what you\'d look like]({pic_url}).')
-                        print("Just replied to: " + message.author.name)
+                        try:
+                            parent_author_name = message.parent().author.name
+                            print(f'Replying to: {parent_author_name}')
+                            pic_url = self.generate_image(parent_author_name)
+                            message.reply(f'If your words were a picture, [this is what you\'d look like]({pic_url}).')
+                            print(f'Just replied to: {parent_author_name}')
+                        except:
+                            message.mark_read()
                     message.mark_read()
             except exceptions.APIException:
                 print('whoopsies')
